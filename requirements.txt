@@ -1,0 +1,28 @@
+# INVEST 추론 API 서버 패키지
+# pip install -r requirements.txt
+
+# API 서버
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.0.0
+
+# MLFlow
+mlflow>=2.8.0
+
+# 모델/전처리
+xgboost>=1.7.0
+scikit-learn>=1.2.0
+pandas>=1.5.0
+numpy>=1.23.0
+joblib>=1.2.0
+
+# AWS
+boto3>=1.26.0
+
+# 유틸
+python-dotenv>=1.0.0
+pytz>=2024.1
+
+# 테스트 (개발 환경에서만)
+pytest>=7.0.0
+httpx>=0.27.0

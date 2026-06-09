@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invest-inference
+  namespace: mlops
+  labels:
+    app: invest-inference
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: invest-inference
+  template:
+    metadata:
+      labels:
+        app: invest-inference
+    spec:
+      containers:
+      - name: invest-inference
+        image: 891376975666.dkr.ecr.ap-northeast-2.amazonaws.com/invest-app:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: "http://mlflow.mlflow.svc.cluster.local:80"
+        - name: MLFLOW_TRACKING_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mlflow-auth
+              key: username
+        - name: MLFLOW_TRACKING_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mlflow-auth
+              key: password
+        - name: MODEL_CLS_NAME
+          value: "invest-crel-classification"
+        - name: MODEL_REG_NAME
+          value: "invest-crel-regression"
+        - name: MODEL_ALIAS
+          value: "champion"
+        - name: S3_BUCKET
+          value: "s3-an2-mlops"
+        - name: AWS_REGION
+          value: "ap-northeast-2"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 180
+          periodSeconds: 10
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 300
+          periodSeconds: 30
+          failureThreshold: 3
